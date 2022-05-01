@@ -26,6 +26,11 @@ var mongoConnectionUri = {
   shard: process.env.TD_MONGODB_SHARD || nconf.get('mongo:shard')
 }
 
+winston.info("MongoDB URI");
+winston.info(mongoConnectionUri.server);
+winston.info("MongoDB Database");
+winston.info(mongoConnectionUri.database);
+
 var CONNECTION_URI = ''
 if (!mongoConnectionUri.username) {
   CONNECTION_URI =
