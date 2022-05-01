@@ -314,32 +314,6 @@ function timezoneDefault(callback) {
   })
 }
 
-function showTourSettingDefault(callback) {
-  SettingsSchema.getSettingByName('showTour:enable', function (err, setting) {
-    if (err) {
-      winston.warn(err)
-      if (_.isFunction(callback)) return callback(err)
-      return false
-    }
-
-    if (!setting) {
-      var defaultShowTour = new SettingsSchema({
-        name: 'showTour:enable',
-        value: 0
-      })
-
-      defaultShowTour.save(function (err) {
-        if (err) {
-          winston.warn(err)
-          if (_.isFunction(callback)) return callback(err)
-        }
-
-        if (_.isFunction(callback)) return callback()
-      })
-    } else if (_.isFunction(callback)) return callback()
-  })
-}
-
 function ticketTypeSettingDefault(callback) {
   SettingsSchema.getSettingByName('ticket:type:default', function (err, setting) {
     if (err) {
@@ -361,11 +335,14 @@ function ticketTypeSettingDefault(callback) {
         }
 
         var type = _.first(types)
-        if (!type) return callback('No Types Defined!')
+        if (!type) {
+          ticketTypeSchema.create({ name: "Issue" })
+          return callback('No Types Defined!')
+        }
         if (!_.isObject(type) || _.isUndefined(type._id)) return callback('Invalid Type. Skipping.')
 
         // Save default ticket type
-        var defaultTicketType = new SettingsSchema({
+        var defaultTicketType  = new SettingsSchema({
           name: 'ticket:type:default',
           value: type._id
         })
@@ -430,6 +407,32 @@ function ticketPriorityDefaults(callback) {
     },
     callback
   )
+}
+
+function showTourSettingDefault(callback) {
+  SettingsSchema.getSettingByName('showTour:enable', function (err, setting) {
+    if (err) {
+      winston.warn(err)
+      if (_.isFunction(callback)) return callback(err)
+      return false
+    }
+
+    if (!setting) {
+      var defaultShowTour = new SettingsSchema({
+        name: 'showTour:enable',
+        value: 0
+      })
+
+      defaultShowTour.save(function (err) {
+        if (err) {
+          winston.warn(err)
+          if (_.isFunction(callback)) return callback(err)
+        }
+
+        if (_.isFunction(callback)) return callback()
+      })
+    } else if (_.isFunction(callback)) return callback()
+  })
 }
 
 function normalizeTags(callback) {
